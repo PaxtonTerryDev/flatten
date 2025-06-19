@@ -73,7 +73,7 @@ def save_config(config):
             json.dump(config, f, indent=2, ensure_ascii=False)
         return True
     except IOError as e:
-        print(f"❌ Error saving config: {e}")
+        print(f"Error saving config: {e}")
         return False
 
 
@@ -82,22 +82,22 @@ def show_config():
     config = load_config()
     config_path = get_config_path()
     
-    print(f"📁 Config file: {config_path}")
-    print("📋 Current configuration:")
+    print(f"Config file: {config_path}")
+    print("Current configuration:")
     print("-" * 50)
     
-    print("🚫 Exclude patterns:")
+    print("Exclude patterns:")
     for pattern in config['exclude_patterns']:
         print(f"   • {pattern}")
     
-    print(f"\n📄 Code extensions ({len(config['code_extensions'])}):")
+    print(f"\nCode extensions ({len(config['code_extensions'])}):")
     # Group extensions for better display
     exts = config['code_extensions']
     for i in range(0, len(exts), 8):
         group = exts[i:i+8]
         print(f"   {' '.join(group)}")
     
-    print(f"\n⚙️  Default settings:")
+    print(f"\n  Default settings:")
     print(f"   • Preserve structure: {config['preserve_structure']}")
     print(f"   • Quiet mode: {config['quiet']}")
 
@@ -112,16 +112,16 @@ def manage_config(action, category=None, items=None):
     
     if action == "reset":
         if save_config(DEFAULT_CONFIG):
-            print("✅ Configuration reset to defaults")
+            print("Configuration reset to defaults")
             return True
         return False
     
     if not category or not items:
-        print("❌ Error: Category and items required for add/remove actions")
+        print("Error: Category and items required for add/remove actions")
         return False
     
     if category not in ['exclude', 'extensions']:
-        print(f"❌ Error: Unknown category '{category}'. Use 'exclude' or 'extensions'")
+        print(f"Error: Unknown category '{category}'. Use 'exclude' or 'extensions'")
         return False
     
     config_key = 'exclude_patterns' if category == 'exclude' else 'code_extensions'
@@ -130,7 +130,7 @@ def manage_config(action, category=None, items=None):
         for item in items:
             if item not in config[config_key]:
                 config[config_key].append(item)
-                print(f"✅ Added '{item}' to {category}")
+                print(f"Added '{item}' to {category}")
             else:
                 print(f"⚠️  '{item}' already in {category}")
     
@@ -138,19 +138,19 @@ def manage_config(action, category=None, items=None):
         for item in items:
             if item in config[config_key]:
                 config[config_key].remove(item)
-                print(f"✅ Removed '{item}' from {category}")
+                print(f"Removed '{item}' from {category}")
             else:
                 print(f"⚠️  '{item}' not found in {category}")
     
     elif action == "set":
         if category == "preserve_structure":
             config["preserve_structure"] = items[0].lower() in ['true', '1', 'yes', 'on']
-            print(f"✅ Set preserve_structure to {config['preserve_structure']}")
+            print(f"Set preserve_structure to {config['preserve_structure']}")
         elif category == "quiet":
             config["quiet"] = items[0].lower() in ['true', '1', 'yes', 'on']
-            print(f"✅ Set quiet to {config['quiet']}")
+            print(f"Set quiet to {config['quiet']}")
         else:
-            print(f"❌ Error: Cannot set '{category}'. Use 'preserve_structure' or 'quiet'")
+            print(f"Error: Cannot set '{category}'. Use 'preserve_structure' or 'quiet'")
             return False
     
     return save_config(config)
@@ -191,12 +191,12 @@ def flatten_directory(source_dir, output_dir, preserve_structure=None, file_exte
     skipped_files = []
     
     if not quiet:
-        print(f"🗂️  Flattening: {source_path}")
-        print(f"📁 Output: {output_path}")
+        print(f"Flattening: {source_path}")
+        print(f"Output: {output_path}")
         if exclude_patterns:
-            print(f"🚫 Excluding: {', '.join(exclude_patterns[:5])}" + ("..." if len(exclude_patterns) > 5 else ""))
+            print(f"Excluding: {', '.join(exclude_patterns[:5])}" + ("..." if len(exclude_patterns) > 5 else ""))
         if file_extensions:
-            print(f"📄 Including: {', '.join(file_extensions[:8])}" + ("..." if len(file_extensions) > 8 else ""))
+            print(f"Including: {', '.join(file_extensions[:8])}" + ("..." if len(file_extensions) > 8 else ""))
         print("-" * 60)
     
     # Walk through all files recursively
@@ -246,24 +246,24 @@ def flatten_directory(source_dir, output_dir, preserve_structure=None, file_exte
                 copied_files.append((str(file_path), str(output_file_path)))
                 if not quiet:
                     rel_source = file_path.relative_to(source_path)
-                    print(f"✅ {rel_source} → {output_filename}")
+                    print(f"{rel_source} → {output_filename}")
             except Exception as e:
                 if not quiet:
-                    print(f"❌ Error copying {file_path}: {e}")
+                    print(f"Error copying {file_path}: {e}")
                 skipped_files.append(str(file_path))
     
     # Print summary
     if not quiet:
         print("-" * 60)
-        print(f"🎉 Complete! Copied {len(copied_files)} files, skipped {len(skipped_files)}")
+        print(f"Complete! Copied {len(copied_files)} files, skipped {len(skipped_files)}")
         
         if skipped_files and len(skipped_files) <= 5:
-            print("\n📝 Skipped files:")
+            print("\nSkipped files:")
             for skipped in skipped_files[:5]:
                 rel_path = Path(skipped).relative_to(source_path) if source_path in Path(skipped).parents else Path(skipped)
                 print(f"   • {rel_path}")
         elif len(skipped_files) > 5:
-            print(f"\n📝 Skipped {len(skipped_files)} files (use --verbose to see all)")
+            print(f"\nSkipped {len(skipped_files)} files (use --verbose to see all)")
     
     return copied_files, skipped_files
 
@@ -286,7 +286,7 @@ def main():
     
     # Main flatten command parser
     parser = argparse.ArgumentParser(
-        description="🗂️  Flatten directory structures - copy all files to a single directory",
+        description="Flatten directory structures - copy all files to a single directory",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -371,11 +371,11 @@ Configuration:
         source_display = str(source_path)
     
     if not source_path.exists():
-        print(f"❌ Error: Source directory '{args.source}' does not exist.", file=sys.stderr)
+        print(f"Error: Source directory '{args.source}' does not exist.", file=sys.stderr)
         return 1
     
     if not source_path.is_dir():
-        print(f"❌ Error: '{args.source}' is not a directory.", file=sys.stderr)
+        print(f"Error: '{args.source}' is not a directory.", file=sys.stderr)
         return 1
     
     # Load config for defaults
@@ -406,16 +406,16 @@ Configuration:
         )
         
         if args.verbose and skipped_files and not (args.quiet or config.get('quiet', False)):
-            print("\n📝 All skipped files:")
+            print("\nAll skipped files:")
             for skipped in skipped_files:
                 rel_path = Path(skipped).relative_to(source_path) if source_path in Path(skipped).parents else Path(skipped)
                 print(f"   • {rel_path}")
                 
     except KeyboardInterrupt:
-        print("\n⏹️  Operation cancelled by user.", file=sys.stderr)
+        print("\n⏹Operation cancelled by user.", file=sys.stderr)
         return 1
     except Exception as e:
-        print(f"❌ Error: {e}", file=sys.stderr)
+        print(f"Error: {e}", file=sys.stderr)
         return 1
     
     return 0
